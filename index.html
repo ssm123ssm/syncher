@@ -12,11 +12,18 @@
 
 <body>
 
-    Syncher
+    <div class="m-3 display-4 text-center title">syncher</div>
 
-    <div ng-app="myApp" ng-controller="ctrl">
-        {{status}}
+    <div ng-app="myApp" ng-controller="ctrl" ng-init="getDocs()">
+
+        <div ng-repeat="doc in docs">
+            <span class="h3">{{doc.val}}</span> <span ng-click="remove(doc._id)">X</span> - {{doc.time}}
+        </div>
+
+        <div class="m-3 text-center" ng-show="synching">loading...</div>
     </div>
+
+
 
 
 

@@ -1,9 +1,13 @@
 var express = require('express');
 var port = 80;
-
+var bodyparser = require('body-parser');
 var app = express();
 var dbURL = 'mongodb://localhost:27017/db';
 const mongo = require('mongodb').MongoClient;
+var ObjectId = require('mongodb').ObjectID;
+app.use(bodyparser.urlencoded({
+    extended: false
+}))
 var dbFunctions = {
     connect: function (cb) {
         mongo.connect(dbURL, function (err, db) {
@@ -21,9 +25,7 @@ var dbFunctions = {
     },
     findAll: function (cb) {
         this.connect(function (col) {
-            col.find({}, {
-                _id: 0
-            }).toArray(function (err, ress) {
+            col.find({}).toArray(function (err, ress) {
                 if (err) {
                     console.log(err);
                     return;
@@ -36,6 +38,15 @@ var dbFunctions = {
     insert: function (obj, cb) {
         this.connect(function (col) {
             col.insert(obj);
+            cb();
+        });
+    },
+    removeDoc: function (id, cb) {
+        this.connect(function (col) {
+            console.log(`removing id ${id}`);
+            col.remove({
+                _id: new ObjectId(id)
+            });
             cb();
         });
     }
@@ -70,9 +81,18 @@ app.get('/push/:testString', function (req, res) {
         val: val,
         time: time
     }, function () {
-        res.send(`instered value - ${val}`);
+        res.redirect("/");
     });
 
+});
+
+app.post('/removeDoc', function (req, res) {
+    var id = req.body.id;
+    dbFunctions.removeDoc(id, function () {
+        res.jsonp({
+            status: 20
+        });
+    });
 });
 
 app.listen(port, function () {
