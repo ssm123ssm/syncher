@@ -14,7 +14,7 @@
 
     <div class="m-3 display-4 text-center title">syncher</div>
 
-    <div ng-app="myApp" ng-controller="ctrl" ng-init="getDocs()">
+    <div ng-app="myApp" ng-controller="ctrl" ng-init="getDocs()" ng-cloak>
 
         <div ng-repeat="doc in docs">
             <span class="h3">{{doc.val}}</span> <span ng-click="remove(doc._id)">X</span> - {{doc.time}}
