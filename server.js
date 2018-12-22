@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 var express = require('express');
 var port = 80;
 var bodyparser = require('body-parser');
