@@ -16,9 +16,13 @@
 
     <div ng-app="myApp" ng-controller="ctrl" ng-init="getDocs()" ng-cloak>
 
-        <div ng-repeat="doc in docs">
-            <span class="h3">{{doc.val}}</span> <span ng-click="remove(doc._id)">X</span> - {{doc.time}}
+        <div class="docs">
+            <div ng-show="docs.length == 0" class="text-center">Empty</div>
+            <div ng-repeat="doc in docs" class="m-2">
+                <span class="h3">{{doc.val}}</span> <span class="remove" ng-click="remove(doc._id)">X</span> <br> <span class="small">{{doc.time}}</span>
+            </div>
         </div>
+
 
         <div class="m-3 text-center" ng-show="synching">loading...</div>
     </div>
@@ -31,6 +35,7 @@
     <script src="./scripts/tether.min.js"></script>
     <script src="./scripts/angular.js"></script>
     <script src="./scripts/bootstrap.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
     <script src="./scripts/main.js"></script>
 </body>
 

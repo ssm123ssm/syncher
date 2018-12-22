@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 var express = require('express');
 var port = 80;
 var bodyparser = require('body-parser');
@@ -6,6 +7,8 @@ var app = express();
 var dbURL = 'mongodb://localhost:27017/db';
 const mongo = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectID;
+var crypto = require('crypto');
+var currentHash;
 app.use(bodyparser.urlencoded({
     extended: false
 }))
@@ -18,10 +21,8 @@ var dbFunctions = {
                 return err;
             }
             var col = db.collection('default');
-            console.log('connected');
             cb(col);
             db.close();
-            console.log("DB closed");
         });
     },
     findAll: function (cb) {
@@ -56,10 +57,38 @@ var dbFunctions = {
 
 app.use(express.static('./'));
 
+function getHash() {
+    dbFunctions.findAll(function (ress) {
+        var str = '';
+        ress.forEach(function (item) {
+            str += item._id;
+        });
+        currentHash = crypto.createHash('md5').update(str).digest("hex").toString();
+        console.log('hash updated');
+        return (currentHash);
+    });
+}
+
+getHash();
+
 app.get('/testMongo', function (req, res) {
     dbFunctions.findAll(function (ress) {
         res.send(ress);
     });
+});
+
+
+app.post('/hashCheck', function (req, res) {
+    var clientHash = req.body.hash;
+    if (clientHash === currentHash) {
+        res.jsonp({
+            stat: "same"
+        });
+    } else {
+        res.jsonp({
+            stat: "changed"
+        });
+    }
 });
 
 app.get('/clearDB', function (req, res) {
@@ -69,6 +98,7 @@ app.get('/clearDB', function (req, res) {
             res.send("DB error");
         } else {
             db.dropDatabase();
+            getHash();
             res.send("DB dropped");
         }
     });
@@ -82,6 +112,7 @@ app.get('/push/:testString', function (req, res) {
         val: val,
         time: time
     }, function () {
+        getHash();
         res.redirect("/");
     });
 
@@ -90,6 +121,7 @@ app.get('/push/:testString', function (req, res) {
 app.post('/removeDoc', function (req, res) {
     var id = req.body.id;
     dbFunctions.removeDoc(id, function () {
+        getHash();
         res.jsonp({
             status: 20
         });

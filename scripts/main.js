@@ -29,6 +29,9 @@ app.controller('ctrl', function ($scope) {
         });
     }
     //getting docs
+    var timeout = 0;
+    var hashCheckTimeout = 3000;
+    var passhash;
     $scope.getDocs = function () {
         $.ajax({
             method: 'GET',
@@ -36,6 +39,13 @@ app.controller('ctrl', function ($scope) {
             success: function (data) {
                 $scope.docs = data;
                 $scope.synching = false;
+                //periodic check
+                var str = '';
+                $scope.docs.forEach(function (item) {
+                    str += item._id;
+                });
+                passhash = CryptoJS.MD5(str);
+                $scope.hashCheck();
                 $scope.$apply();
             },
             error: function () {
@@ -45,5 +55,40 @@ app.controller('ctrl', function ($scope) {
             }
         });
     }
+
+    $scope.hashCheck = function () {
+
+        $.ajax({
+            url: '/hashCheck',
+            method: 'POST',
+            data: {
+                hash: passhash.toString()
+            },
+            success: function (data) {
+                if (data.stat == "changed") {
+                    console.log('hash CHANGED');
+                    $scope.getDocs();
+                } else {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(function () {
+                        $scope.hashCheck();
+                    }, hashCheckTimeout);
+                }
+
+            },
+            error: function () {
+                console.log('hash check error');
+                clearTimeout(timeout);
+                timeout = setTimeout(function () {
+                    $scope.hashCheck();
+                }, hashCheckTimeout);
+
+            }
+        });
+    }
+
+
+
+
 
 });
