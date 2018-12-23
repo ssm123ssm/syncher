@@ -17,7 +17,7 @@ var dbFunctions = {
         mongo.connect(dbURL, function (err, db) {
             if (err) {
                 console.log(err);
-                db.close();
+                //db.close();
                 return err;
             }
             var col = db.collection('default');
