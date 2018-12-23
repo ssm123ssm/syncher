@@ -19,10 +19,11 @@ var dbFunctions = {
                 console.log(err);
                 //db.close();
                 return err;
+            } else {
+                var col = db.collection('default');
+                cb(col);
+                db.close();
             }
-            var col = db.collection('default');
-            cb(col);
-            db.close();
         });
     },
     findAll: function (cb) {
