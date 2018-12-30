@@ -21,10 +21,26 @@
             <div ng-repeat="doc in docs" class="m-2">
                 <span class="h3">{{doc.val}}</span> <span class="remove" ng-click="remove(doc._id)">X</span> <br> <span class="small">{{doc.time}}</span>
             </div>
+
+            <div class="uploads">
+                <div ng-repeat="item in uploads" class="upload-item">
+                    <div class="upload-frame"></div>
+                    <div class="small"><a href="/uploads/{{item}}">{{item}}</a><span class="remove" ng-click="removeUpload(item)">X</span> </div>
+
+                </div>
+            </div>
         </div>
 
 
         <div class="m-3 text-center" ng-show="synching">loading...</div>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <input type="file" name="img" class="form-control-file" id="imgupload" />
+
+                <button type="submit" class="btn btn-primary">submit</button>
+            </div>
+        </form>
+
     </div>
 
 

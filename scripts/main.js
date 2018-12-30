@@ -28,10 +28,45 @@ app.controller('ctrl', function ($scope) {
             }
         });
     }
+    $scope.removeUpload = function (item) {
+        $scope.synching = true;
+        $.ajax({
+            method: 'POST',
+            data: {
+                item: item
+            },
+            url: "/removeUpload",
+            success: function (data) {
+                if (data.status == 20) {
+                    $scope.getDocs();
+                }
+                $scope.synching = false;
+            },
+            error: function () {
+                console.log('error on removal');
+                $scope.synching = false;
+            }
+        });
+    }
     //getting docs
     var timeout = 0;
     var hashCheckTimeout = 3000;
     var passhash;
+    var hash2;
+
+    function getUploads(callback) {
+        $.ajax({
+            method: 'GET',
+            url: "/checkuploads",
+            success: function (data) {
+                callback(data);
+            },
+            error: function () {
+                console.log('error on getting uploads info');
+
+            }
+        });
+    }
     $scope.getDocs = function () {
         $.ajax({
             method: 'GET',
@@ -45,8 +80,16 @@ app.controller('ctrl', function ($scope) {
                     str += item._id;
                 });
                 passhash = CryptoJS.MD5(str);
-                $scope.hashCheck();
-                $scope.$apply();
+
+                getUploads(function (data) {
+                    console.log(data);
+                    $scope.uploads = data.items;
+                    hash2 = CryptoJS.MD5(data.items.join('')).toString();
+                    $scope.hashCheck();
+                    $scope.$apply();
+                });
+
+
             },
             error: function () {
                 console.log('error on getting docs');
@@ -62,7 +105,8 @@ app.controller('ctrl', function ($scope) {
             url: '/hashCheck',
             method: 'POST',
             data: {
-                hash: passhash.toString()
+                hash: passhash.toString(),
+                hash2: hash2
             },
             success: function (data) {
                 if (data.stat == "changed") {
