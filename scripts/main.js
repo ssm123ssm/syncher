@@ -1,6 +1,9 @@
 $(function () {
-
-
+    $('#pushData').keypress(function (event) {
+        if (event.keyCode == 13) {
+            $('#sendMsg').click();
+        }
+    });
 });
 
 var app = angular.module('myApp', []);
