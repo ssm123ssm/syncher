@@ -8,6 +8,14 @@ app.controller('ctrl', function ($scope) {
     $scope.status = "On";
     $scope.docs = [];
     $scope.synching = 1;
+    $scope.push = function () {
+        var val = encodeURI($("#pushData").val());
+        $scope.synching = true;
+        $.get(`/push/${val}`, function (data) {
+            $scope.synching = false;
+            $("#pushData").val('');
+        });
+    }
     $scope.remove = function (id) {
         $scope.synching = true;
         $.ajax({

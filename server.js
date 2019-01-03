@@ -123,6 +123,7 @@ app.get('/checkuploads', function (req, res) {
 });
 
 app.get('/testMongo', function (req, res) {
+
     dbFunctions.findAll(function (ress) {
         res.send(ress);
     });
@@ -178,7 +179,9 @@ app.get('/push/:testString', function (req, res) {
 
     dbFunctions.insert({
         val: val,
-        time: time
+        time: time,
+        browser: req.headers['user-agent'],
+        host: req.headers.host
     }, function () {
         getHash();
         res.redirect("/");
@@ -207,6 +210,7 @@ app.post('/removeUpload', function (req, res) {
     });
 
 });
+
 app.listen(port, function () {
     console.log('server started on port ' + port);
     getHash();
