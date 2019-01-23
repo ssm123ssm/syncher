@@ -8,46 +8,116 @@
     <link rel="stylesheet" href="./styles/bootstrap.css">
     <link rel="stylesheet" href="./styles/animate.css">
     <link rel="stylesheet" href="./styles/main.css">
+    <link rel="stylesheet" href="styles/components.css">
 </head>
 
-<body>
+<body class="container-fluid">
 
     <div class="m-3 display-4 text-center title">syncher</div>
 
-    <div ng-app="myApp" ng-controller="ctrl" ng-init="getDocs()" ng-cloak class="container-fluid">
+    <div ng-app="myApp" ng-controller="ctrl" ng-init="getData()" ng-cloak id="ngapp">
 
-        <div class="docs">
-            <div ng-show="docs.length == 0" class="text-center">Empty</div>
-            <div ng-repeat="doc in docs" class="m-2">
-                <span class="h3">{{doc.val}}</span> <span class="remove" ng-click="remove(doc._id)">X</span> <br> <span class="small">{{doc.time | date:"dd/MM/yyyy 'at' h:mma"}}</span> by
-                <span class="small">{{doc.host}}</span>
-            </div>
+        <div class="indicator" ng-class="indicator"></div>
+        <div class="create-btn btn-synch m-auto" id="createBtn">create</div>
 
-            <div class="uploads">
-                <div ng-repeat="item in uploads" class="upload-item">
-                    <div class="upload-frame"></div>
-                    <div class="small"><a href="/uploads/{{item}}">{{item}}</a><span class="remove" ng-click="removeUpload(item)">X</span> </div>
+        <div class="mode">{{mode}} mode</div>
+        <div>posting as <span class="user" id="user">{{user}}</span> </div>
+        <div ng-if="key_visible">key:{{key}}</div>
+
+        <div class="full-width-container">
+            <div class="card-synch" id="createPost">
+                <div class="close m-2" id="closeCreatePost">x</div>
+                <div class="cardHead"> Make a post</div>
+                <input type="text" class="form-control m-b-1" placeholder="Create {{postBehaviour}}..." id="pushData">
+
+                <div class="row">
+
+                    <div class="col-sm-3">
+                        <form action="/upload" method="post" enctype="multipart/form-data" id="form1">
+                            <div class="form-group m-0">
+                                <input type="text" value="{{key}}" name="key" hidden>
+                                <input id="attachmentDescription" type="text" name="description" hidden>
+                                <div class="btn-synch border-round-1">
+                                    <label class="m-0" for="imgupload">Attach</label>
+                                </div>
+                                <input type="file" name="img" class="form-control-file" id="imgupload" hidden />
+                                <button type="submit" class="btn btn-primary" hidden>submit</button>
+                            </div>
+                        </form>
+                        <div id="fileName">{{attachedFileName}}</div>
+                        <div class="close" ng-show="fileAttached" ng-click="removeFile()">x</div>
+                    </div>
+                    <div class="col-sm-3" id="imagePreviewFrame">
+                        <img class="img img-responsive img-thumbmail img-prev" id="imagePreview">
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="dropdown">
+                            <!--<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Dropdown Example
+<span class="caret"></span></button>-->
+                            <div class="btn-synch border-round-1 dropdown-toggle" data-toggle="dropdown">as {{postBehaviour}}</div>
+                            <ul class="dropdown-menu">
+                                <li class="dropdown-item" ng-click="setPostBehaviour('post')">Post</li>
+                                <li class="dropdown-item" ng-click="setPostBehaviour('message')">Message</li>
+                                <li class="dropdown-item" ng-click="setPostBehaviour('other')">Other</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 text-center">
+                        <div class="btn-synch border-round-1" id="sendMsg" ng-click="push()">send</div>
+                    </div>
 
                 </div>
             </div>
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="Enter text..." id="pushData">
-                <span class="input-group-btn">
-                    <button class="btn btn-default" type="button" id="sendMsg" ng-click="push()">Go!</button>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-8">
+                <div class="card-synch">
+                    <div class="cardHead">Feed</div>
+                    <div class="docjs">
+                        <div ng-show="docs.length == 0" class="text-center">Empty feed</div>
+                        <div ng-repeat="doc in docs" class="m-2">
+                            <span class="h3">{{doc.val}}</span> <span class="remove" ng-click="remove(doc._id)">X</span> <br> <span class="small">{{doc.time | date:"dd/MM/yyyy 'at' h:mma"}}</span> by
+                            <span class="user small" msguser>{{doc.user}}</span>
+                            <span class="small">{{doc.key}}</span>
+                        </div>
+
+                        <div class="uploads">
+                            <div ng-repeat="item in uploads" class="upload-item">
+                                <div class="upload-frame"></div>
+                                <div class="small"><a href="/uploads/{{item}}">{{item}}</a><span class="remove" ng-click="removeUpload(item)">X</span> </div>
+
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Enter key... Leave blank for public feed" id="pvtKey">
+                            <span class="input-group-btn">
+                    <button  class="btn btn-default" type="button" id="setKey" ng-click="pvt()">set</button>
                 </span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-sm-4">
+                <div class="card-synch">
+                    <div class="cardHead">Messages</div>
+                    <div ng-show="msgs.length == 0" class="text-center">No messages</div>
+                    <div ng-repeat="msg in msgs" class="m-2">
+                        <span class="h4 user">{{msg.user}}</span> :
+                        <span class="h3">{{msg.val}}</span> <span class="remove" ng-click="remove(msg._id)">X</span> <br> <span class="small">{{msg.time | date:"dd/MM/yyyy 'at' h:mma"}}</span>
+                    </div>
+                    <div class="small reply-link" ng-click="triggerCreate('message')" ng-show="msgs.length > 0">reply</div>
+                </div>
             </div>
         </div>
+
 
 
         <div class="m-3 text-center" ng-show="synching">loading...</div>
 
         <!-- /input-group -->
-        <form action="/upload" method="post" enctype="multipart/form-data">
-            <div class="form-group">
-                <input type="file" name="img" class="form-control-file" id="imgupload" />
-                <button type="submit" class="btn btn-primary">submit</button>
-            </div>
-        </form>
 
     </div>
 
@@ -55,11 +125,15 @@
 
 
 
+
     <script src="./scripts/jquery.js"></script>
     <script src="./scripts/tether.min.js"></script>
+    <script src="./scripts/cookies.js"></script>
     <script src="./scripts/angular.js"></script>
     <script src="./scripts/bootstrap.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
+    <script src="./scripts/synch.js"></script>
+    <script src="./scripts/uniq.js"></script>
     <script src="./scripts/main.js"></script>
 </body>
 

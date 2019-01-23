@@ -9,13 +9,21 @@ const mongo = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectID;
 var crypto = require('crypto');
 var fs = require('fs');
+var syncher = require('./packages/syncher');
 var multer = require('multer');
+//var expressip = require('express-ip');
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'uploads')
     },
     filename: function (req, file, cb) {
-        cb(null, file.originalname + '-' + Date.now() + '.' + file.originalname.split('.')[file.originalname.split('.').length - 1])
+        if (file.originalname.includes('key_')) {
+            cb("naming problem", null);
+        }
+        cb(null, file.originalname + '-' + Date.now() + '.' + 'key_' + req.body.key + '.' + 'des_' + req.body.description + '.' +
+            file.originalname.split('.')[file.originalname.split('.').length - 1]);
+        /*console.log("req.body");
+console.log(req.body);*/
     }
 })
 var upload = multer({
@@ -25,23 +33,24 @@ var currentHash;
 var hash2;
 app.use(bodyparser.urlencoded({
     extended: false
-}))
+}));
+//app.use(expressip().getIpInfoMiddleware);
 var dbFunctions = {
-    connect: function (cb) {
+    connect: function (collection, cb) {
         mongo.connect(dbURL, function (err, db) {
             if (err) {
                 console.log(err);
                 //db.close();
                 return err;
             } else {
-                var col = db.collection('default');
+                var col = db.collection(collection);
                 cb(col);
                 db.close();
             }
         });
     },
     findAll: function (cb) {
-        this.connect(function (col) {
+        this.connect('default', function (col) {
             col.find({}).toArray(function (err, ress) {
                 if (err) {
                     console.log(err);
@@ -53,18 +62,32 @@ var dbFunctions = {
         });
     },
     insert: function (obj, cb) {
-        this.connect(function (col) {
+        this.connect('default', function (col) {
             col.insert(obj);
             cb();
         });
     },
     removeDoc: function (id, cb) {
-        this.connect(function (col) {
+        this.connect('default', function (col) {
             console.log(`removing id ${id}`);
             col.remove({
                 _id: new ObjectId(id)
             });
             cb();
+        });
+    },
+    search: function (query, target, cb) {
+        var searchQ = {};
+        searchQ[query] = target;
+        this.connect('default', function (col) {
+            col.find(searchQ).toArray(function (err, ress) {
+                if (err) {
+                    console.log(err);
+                    return;
+                } else {
+                    cb(ress);
+                }
+            });
         });
     }
 };
@@ -72,26 +95,65 @@ var dbFunctions = {
 
 app.use(express.static('./'));
 
-function getHash() {
-    dbFunctions.findAll(function (ress) {
-
-        watchUploads(function (items) {
-            console.log('uploads: ' + items);
-            var str2 = items.join('');
-            var currentHashUploads = crypto.createHash('md5').update(str2).digest("hex").toString();
-            hash2 = currentHashUploads;
-            console.log('uploads hash: ' + currentHashUploads);
-        });
-
+//function for passing into syncher NPM
+function getHash(key, callback) {
+    //console.log('a hash get request');
+    if (key == '' || key == undefined) {
+        key = null;
+    }
+    dbFunctions.search("key_", key, function (ress) {
         var str = '';
         ress.forEach(function (item) {
             str += item._id;
         });
-        currentHash = crypto.createHash('md5').update(str).digest("hex").toString();
-        console.log('hash updated');
-        return (currentHash);
+        var currentHash = crypto.createHash('md5').update(str).digest("hex").toString();
+        callback(currentHash);
     });
 }
+
+function getUploadsHash(key, callback) {
+    if (key == null || key == undefined) {
+        key = '';
+    }
+    watchUploads(function (items) {
+        //console.log(key);
+        var hash = crypto.createHash('md5').update(filterByKey(key, items).join('')).digest("hex").toString();
+        //console.log(hash);
+        callback(hash);
+    });
+}
+
+function filterByKey(key, arr) {
+    var ret = [];
+    // console.log(`key is ${key}`);
+    arr.forEach(function (item) {
+        // console.log(`checking ${item}`);
+
+        if (item.includes(`key_${key}`)) {
+            var splits = item.split('.');
+            var splitsCount = 0;
+            var detKey;
+            splits.forEach(function (split) {
+                if (split.includes('key_')) {
+                    splitsCount++;
+                    detKey = split.slice(4);
+                    //console.log(detKey);
+                }
+            });
+            if (splitsCount > 1) {
+                console.log('file name compromise');
+            } else {
+                if (detKey == key) {
+                    ret.push(item);
+                }
+            }
+
+        }
+    });
+    return ret;
+}
+/*var ch = ['asdsd.key_dsd.ds', 'asdsasd.key_dsdsd.ds', 'dsf.key_.ds', 'eww.key_ssm.dds.ds', 'qwe.key_.key_findme.ds'];
+console.log(filterByKey('', ch));*/
 
 function watchUploads(callback) {
     fs.readdir('./uploads', function (err, items) {
@@ -112,19 +174,33 @@ function removeUpload(item, callback) {
     });
 }
 
+function getKeyByUserId(id, callback) {
+    console.log('user id is %s', id);
+
+}
+
 
 app.get('/checkuploads', function (req, res) {
+    if (req.query.key == undefined) {
+        req.query.key = '';
+    }
+    //console.log(req.query.key);
     watchUploads(function (items) {
         res.jsonp({
-            items: items
+            items: filterByKey(req.query.key, items)
         });
     });
 
 });
 
 app.get('/testMongo', function (req, res) {
-
-    dbFunctions.findAll(function (ress) {
+    var key = req.query.key;
+    if (key == '') {
+        key = null;
+    }
+    dbFunctions.search("key_", key, function (ress) {
+        //console.log(`getting docs for key: ${key}`);
+        //console.log(ress);
         res.send(ress);
     });
 });
@@ -133,9 +209,7 @@ app.post('/upload',
     upload.single('img'),
     function (req, res, next) {
         if (req.file) {
-            //watchUploads();
-            getHash();
-            res.redirect('/');
+            res.redirect(`/`);
         } else {
             res.send('No file');
         }
@@ -143,22 +217,8 @@ app.post('/upload',
 
 
 
-app.post('/hashCheck', function (req, res) {
-    //getHash();
-    var clientHash = req.body.hash;
-    var clientHash2 = req.body.hash2;
-
-    if (clientHash === currentHash && clientHash2 === hash2) {
-        res.jsonp({
-            stat: "same"
-        });
-    } else {
-        console.log("Client's hash change detected");
-        res.jsonp({
-            stat: "changed"
-        });
-    }
-});
+app.post('/hashCheck', syncher.getHash(getHash));
+app.post('/uploadsHashCheck', syncher.getHash(getUploadsHash));
 
 app.get('/clearDB', function (req, res) {
     mongo.connect(dbURL, function (err, db) {
@@ -167,32 +227,79 @@ app.get('/clearDB', function (req, res) {
             res.send("DB error");
         } else {
             db.dropDatabase();
-            getHash();
+            //getHash();
             res.send("DB dropped");
         }
+    });
+});
+
+app.get('/private', function (req, res) {
+
+    res.jsonp({
+        mode: 'private',
+        key: req.query.key
+    });
+});
+
+app.get('/all', function (req, res) {
+    dbFunctions.findAll(function (ress) {
+        res.jsonp(ress);
     });
 });
 
 app.get('/push/:testString', function (req, res) {
     var val = req.params.testString;
     var time = new Date();
+    var key_ = req.query.key;
 
     dbFunctions.insert({
         val: val,
         time: time,
+        key_: key_,
         browser: req.headers['user-agent'],
         host: req.headers.host
     }, function () {
-        getHash();
+        //getHash();
         res.redirect("/");
     });
 
 });
 
+app.post('/push', function (req, res) {
+    var val = req.body.data;
+    var time = new Date();
+    var key_ = req.body.key;
+    if (key_ == '') {
+        key_ = null;
+    }
+    console.log(req.body);
+
+    if (req.body.postTo) {
+        console.log('Msg to specific');
+
+    }
+
+    dbFunctions.insert({
+        val: val,
+        time: time,
+        key_: key_,
+        user: req.body.user,
+        user_id: req.body.user_id,
+        behaviour: req.body.behaviour,
+        browser: req.headers['user-agent'],
+        host: req.headers.host
+    }, function () {
+        //getHash();
+        res.jsonp({
+            status: 20
+        });
+    });
+});
+
 app.post('/removeDoc', function (req, res) {
     var id = req.body.id;
     dbFunctions.removeDoc(id, function () {
-        getHash();
+        // getHash();
         res.jsonp({
             status: 20
         });
@@ -203,7 +310,7 @@ app.post('/removeUpload', function (req, res) {
     var item = req.body.item;
     console.log('removal req for ' + item);
     removeUpload(item, function () {
-        getHash();
+        //getHash();
         res.jsonp({
             status: 20
         });
@@ -213,5 +320,5 @@ app.post('/removeUpload', function (req, res) {
 
 app.listen(port, function () {
     console.log('server started on port ' + port);
-    getHash();
+    //getHash();
 });
