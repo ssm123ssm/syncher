@@ -82,8 +82,35 @@ body {
     padding: 3px;
     padding-left: 6px;
     padding-right: 6px;
+    padding-bottom: 5px;
     font-weight: bold;
     border-radius: 8px;
     cursor: pointer;
     letter-spacing: 3px;
+}
+
+#waves {
+    width: 80vw;
+    max-width: 500px;
+    margin: auto;
+    height: 150px;
+    text-align: center;
+    display: -webkit-box;
+}
+
+a {
+    color: #376153;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+.web-thumb {
+    width: 200px;
+    display: block;
+}
+
+.feed-upload {
+    max-height: 400px;
 }

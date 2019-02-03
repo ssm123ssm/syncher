@@ -14,6 +14,7 @@
 <body class="container-fluid">
 
     <div class="m-3 display-4 text-center title">syncher</div>
+    <canvas id="waves"></canvas>
 
     <div ng-app="myApp" ng-controller="ctrl" ng-init="getData()" ng-cloak id="ngapp">
 
@@ -77,15 +78,35 @@
                     <div class="docjs">
                         <div ng-show="docs.length == 0" class="text-center">Empty feed</div>
                         <div ng-repeat="doc in docs" class="m-2">
-                            <span class="h3">{{doc.val}}</span> <span class="remove" ng-click="remove(doc._id)">X</span> <br> <span class="small">{{doc.time | date:"dd/MM/yyyy 'at' h:mma"}}</span> by
-                            <span class="user small" msguser>{{doc.user}}</span>
-                            <span class="small">{{doc.key}}</span>
+                            <div ng-if="doc.type == 'non-link'">
+                                <span class="h3">{{doc.val}}</span> <span class="remove" ng-click="remove(doc._id)">X</span> <br> <span class="small">{{doc.time | date:"dd/MM/yyyy 'at' h:mma"}}</span> by
+                                <span class="user small" msguser>{{doc.user}}</span>
+                                <span class="small">{{doc.key}}</span>
+                            </div>
+                            <div ng-if="doc.type == 'link'">
+                                <a href="{{doc.val}}" target="_blank"><span class="h3"> {{doc.val}}</span> 
+                                <!--<img src="http://api.screenshotmachine.com/?key=f2f8b4&url={{doc.val}}">-->
+                                
+                                </a>
+                                <span class="remove" ng-click="remove(doc._id)">X</span>
+                                <!--<a href="{{doc.val}}" target="_blank"><span class="h3"><img class="img img-thumbnail web-thumb" src="http://api.screenshotmachine.com/?key=f2f8b4&url={{doc.val}}"></span></a>-->
+                                <a href="{{doc.val}}" target="_blank"><span class="h3"><img class="img img-thumbnail web-thumb" src="https://cdn.pixabay.com/photo/2018/03/13/02/43/eye-3221498_640.jpg"></span></a>
+
+                                <br> <span class="small">{{doc.time | date:"dd/MM/yyyy 'at' h:mma"}}</span> by
+                                <span class="user small" msguser>{{doc.user}}</span>
+                                <span class="small">{{doc.key}}</span>
+
+                            </div>
+
                         </div>
 
                         <div class="uploads">
                             <div ng-repeat="item in uploads" class="upload-item">
                                 <div class="upload-frame"></div>
-                                <div class="small"><a href="/uploads/{{item}}">{{item}}</a><span class="remove" ng-click="removeUpload(item)">X</span> </div>
+                                <div class="small"><a href="/uploads/{{item.upload}}">{{item.upload}}</a><span class="remove" ng-click="removeUpload(item.upload)">X</span> </div>
+                                <div ng-if="item.type == 'image'">
+                                    <img class="img img-thumbnail feed-upload" src="/uploads/{{item.upload}}">
+                                </div>
 
                             </div>
                         </div>
@@ -101,11 +122,12 @@
 
             </div>
             <div class="col-sm-4">
-                <div class="card-synch">
+                <div class="card-synch" ng-click="turnOffLed()">
+                    <div class="indicator {{msgLed}}"></div>
                     <div class="cardHead">Messages</div>
                     <div ng-show="msgs.length == 0" class="text-center">No messages</div>
                     <div ng-repeat="msg in msgs" class="m-2">
-                        <span class="h4 user">{{msg.user}}</span> :
+                        <span class="user">{{msg.user}}</span> :
                         <span class="h3">{{msg.val}}</span> <span class="remove" ng-click="remove(msg._id)">X</span> <br> <span class="small">{{msg.time | date:"dd/MM/yyyy 'at' h:mma"}}</span>
                     </div>
                     <div class="small reply-link" ng-click="triggerCreate('message')" ng-show="msgs.length > 0">reply</div>
@@ -132,8 +154,11 @@
     <script src="./scripts/angular.js"></script>
     <script src="./scripts/bootstrap.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
+    <script src="https://isuttell.github.io/sine-waves/javascripts/sine-waves.min.js"></script>
     <script src="./scripts/synch.js"></script>
     <script src="./scripts/uniq.js"></script>
+    <script src="./scripts/swHandler.js"></script>
+    <script src="./scripts/notifier.js"></script>
     <script src="./scripts/main.js"></script>
 </body>
 

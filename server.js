@@ -8,9 +8,16 @@ var dbURL = 'mongodb://localhost:27017/db';
 const mongo = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectID;
 var crypto = require('crypto');
+var cookieParser = require('cookie-parser');
 var fs = require('fs');
 var syncher = require('./packages/syncher');
 var multer = require('multer');
+const webpush = require('web-push');
+webpush.setVapidDetails(
+    'mailto:example@yourdomain.org',
+    'BOwgl5YKUWtkZ34IkuZQzP7-R-Gj03xHez498heSUY17vg48-jgOk7Ux_KdgCG8lQdDXBkEGkAFhkBYKQ_oLyGU',
+    'iGfUiNnfAG8EMGuTx-M2gY6_kFRCc5MwnB8aTg9GYLA'
+);
 //var expressip = require('express-ip');
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -26,6 +33,10 @@ var storage = multer.diskStorage({
 console.log(req.body);*/
     }
 })
+//SSL
+
+
+
 var upload = multer({
     storage: storage
 });
@@ -34,6 +45,7 @@ var hash2;
 app.use(bodyparser.urlencoded({
     extended: false
 }));
+app.use(cookieParser())
 //app.use(expressip().getIpInfoMiddleware);
 var dbFunctions = {
     connect: function (collection, cb) {
@@ -94,6 +106,16 @@ var dbFunctions = {
 
 
 app.use(express.static('./'));
+
+//PUSH
+function push(sub, obj) {
+    if (sub) {
+        sub = JSON.parse(sub);
+        /*webpush.sendNotification(sub, JSON.stringify(obj)).catch(error => {
+    console.error(error);
+});*/
+    }
+}
 
 //function for passing into syncher NPM
 function getHash(key, callback) {
@@ -318,7 +340,27 @@ app.post('/removeUpload', function (req, res) {
 
 });
 
+app.post('/pushSubscription', function (req, res) {
+    push(req.cookies.push, {
+        title: 'Welcome',
+        options: {
+            body: `Hello ${req.cookies.user}`,
+            vibrate: [100, 50, 100]
+        }
+    });
+    res.send('Got the subscription');
+});
+
 app.listen(port, function () {
     console.log('server started on port ' + port);
-    //getHash();
 });
+
+
+//SSL server
+/*var https = require('https');
+https.createServer({
+    key: fs.readFileSync('./ssl/server.key'),
+    cert: fs.readFileSync('./ssl/server.cert')
+}, app).listen(443, () => {
+    console.log('HTTPS server started');
+})*/

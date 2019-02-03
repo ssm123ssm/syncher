@@ -57,6 +57,7 @@ var synch = {
                     console.log('hash changed. Performing callback');
                     //clearTimeout(timeOut);
                     callback();
+                    //genWaves(10);
                 } else {
                     //console.log('hash not changed');
                     // clearTimeout(t);

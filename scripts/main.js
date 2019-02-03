@@ -1,11 +1,10 @@
+var firstRun = true;
 $(function () {
 
-
-
+    $(".remove").click(function (e) {
+        e.preventDefault();
+    });
     var scope = angular.element($("#ngapp")).scope();
-
-
-
     $('#pushData').keypress(function (event) {
         if (event.keyCode == 13) {
             $('#sendMsg').click();
@@ -86,10 +85,7 @@ app.directive("msguser", function () {
         restrict: "EA",
         link: function (scope, elem, attrs) {
             $(elem).click(function () {
-                scope.$parent.postBehaviour = 'message';
-                scope.$parent.postToACpecific = true;
-                scope.$parent.postTo = scope.doc.user_id;
-                $("#createBtn").trigger('click');
+                scope.$parent.triggerCreate('message');
 
             });
         }
@@ -104,13 +100,18 @@ app.controller('ctrl', function ($scope) {
     $scope.docs = [];
     $scope.msgs = [];
     $scope.synching = 1;
+    $scope.msgLed = 'idle';
     $scope.indicator = 'idle';
     $scope.fileAttached = false;
     $scope.postBehaviour = 'post';
     $scope.postToACpecific = false;
     $scope.attachedFileName = '';
+    $scope.turnOffLed = function () {
+        $scope.msgLed = 'idle';
+    }
     $scope.triggerCreate = function (postBehaviour) {
         $scope.postBehaviour = postBehaviour;
+        //$scope.$apply();
         $("#createBtn").trigger('click');
     }
     $scope.setPostBehaviour = function (val) {
@@ -123,7 +124,7 @@ app.controller('ctrl', function ($scope) {
         $("#imagePreviewFrame").css("display", "none");
     }
     $scope.pvt = function () {
-
+        firstRun = true;
         synch.clearTimeouts();
         $scope.key = $("#pvtKey").val();
         Cookies.set('key', $scope.key);
@@ -161,7 +162,11 @@ app.controller('ctrl', function ($scope) {
                 user: $scope.user,
                 user_id: $scope.user_id,
                 behaviour: $scope.postBehaviour
+            };
+            if (dataToBeSent.behaviour == 'message') {
+                firstRun = true;
             }
+
             if ($scope.postToACpecific) {
                 dataToBeSent.postTo = $scope.postTo;
                 $scope.postToACpecific = false;
@@ -239,18 +244,40 @@ app.controller('ctrl', function ($scope) {
                 key: $scope.key
             },
             success: function (data) {
-                $scope.msgs = [];
-                $scope.docs = [];
+
+                //$scope.msgs = [];
+                //$scope.docs = [];
+                var newMessages = [];
+
+                var newDocs = [];
+
+
                 data.forEach(function (item) {
                     if (item.behaviour == 'message') {
-                        $scope.msgs.push(item);
+                        newMessages.push(item);
+                        //$scope.msgs.push(item);
                     }
                     if (item.behaviour == 'post') {
-                        $scope.docs.push(item);
+                        newDocs.push(item);
+                        //$scope.docs.push(item);
                     }
                 });
+                //notifier.messages($scope.msgs, newMessages);
+                if (window.Notification && !firstRun) {
+                    notifier.messages($scope.msgs, newMessages, $scope);
+                } else {
+                    if (!firstRun) {
+                        //alert(firstRun);
+                        notifier.blink($scope);
+                    }
+                }
 
+                processDocs(newDocs);
+
+                $scope.msgs = newMessages;
+                $scope.docs = newDocs;
                 // $scope.docs = data;
+                firstRun = false;
                 $scope.synching = false;
                 var arr = [];
                 data.forEach(function (item) {
@@ -304,7 +331,9 @@ app.controller('ctrl', function ($scope) {
                         error: 'error'
                     }
                 }
-                $scope.uploads = data.items;
+                var items = processUploads(data.items);
+
+                $scope.uploads = items;
                 synch.synchNow(obj);
                 $scope.$apply();
             },
@@ -335,3 +364,100 @@ app.controller('ctrl', function ($scope) {
         Cookies.set('user_id', uniq.plain(18));
     }
 });
+
+
+/*
+ * Demo of https://github.com/isuttell/sine-waves
+ */
+
+
+function genWaves(speed) {
+    var waves = new SineWaves({
+        el: document.getElementById('waves'),
+
+        speed: speed,
+
+        width: '100px',
+
+        height: '30px',
+
+        ease: 'SineInOut',
+
+        wavesWidth: '70%',
+
+        waves: [
+            {
+                timeModifier: 4,
+                lineWidth: 1,
+                amplitude: -25,
+                wavelength: 25
+    },
+            {
+                timeModifier: 2,
+                lineWidth: 2,
+                amplitude: -50,
+                wavelength: 50
+    }, {
+                timeModifier: 3,
+                lineWidth: 1,
+                amplitude: -25,
+                wavelength: 25
+    }, {
+                timeModifier: 1,
+                lineWidth: 1,
+                amplitude: -25,
+                wavelength: 25
+    }
+  ],
+        // Called on window resize
+        resizeEvent: function () {
+            var gradient = this.ctx.createLinearGradient(0, 0, this.width, 0);
+            gradient.addColorStop(0, "rgba(23, 210, 168, 0.2)");
+            gradient.addColorStop(0.5, "rgba(255, 255, 255, 0.5)");
+            gradient.addColorStop(1, "rgba(23, 210, 168, 0.2)");
+
+            var index = -1;
+            var length = this.waves.length;
+            while (++index < length) {
+                this.waves[index].strokeStyle = gradient;
+            }
+
+            // Clean Up
+            index = void 0;
+            length = void 0;
+            gradient = void 0;
+        }
+    });
+    return waves;
+}
+
+var wave = genWaves(4);
+
+function processDocs(docs) {
+    docs.forEach(function (item) {
+        if (item.val.includes('http') && item.val.includes('/') && item.val.includes('.') && item.val.includes(':')) {
+            item.type = 'link';
+        } else {
+            item.type = 'non-link';
+        }
+    });
+    docs.reverse();
+}
+
+function processUploads(items) {
+    //console.log(items);
+    var out = [];
+    items.forEach(function (item) {
+        var obj = {
+            upload: item
+        };
+        if (item.split('.').length > 1) {
+            var ext = item.split('.')[item.split('.').length - 1];
+            if (ext == 'jpg' || ext == 'png' || ext == 'jpeg' || ext == 'bmp') {
+                obj.type = 'image';
+            }
+        }
+        out.push(obj);
+    });
+    return out;
+}
