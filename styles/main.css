@@ -114,3 +114,9 @@ a:hover {
 .feed-upload {
     max-height: 400px;
 }
+
+.cont {
+    max-height: 100px;
+    overflow: auto;
+    display: block;
+}
