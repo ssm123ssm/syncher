@@ -77,14 +77,16 @@
                     <div class="cardHead">Feed</div>
                     <div class="docjs">
                         <div ng-show="docs.length == 0" class="text-center">Empty feed</div>
-                        <div ng-repeat="doc in docs" class="m-2">
+                        <div ng-repeat="doc in docs" class="post-card">
                             <div ng-if="doc.type == 'non-link'">
-                                <span class="h3">{{doc.val}}</span> <span class="remove" ng-click="remove(doc._id)">X</span> <br> <span class="small">{{doc.time | date:"dd/MM/yyyy 'at' h:mma"}}</span> by
+                                <span class="h4 cont">{{doc.val}}</span> <span class="remove" ng-click="remove(doc._id)">X</span> <br>
+                                <hr>
+                                <span class="small">{{doc.time | date:"dd/MM/yyyy 'at' h:mma"}}</span> by
                                 <span class="user small" msguser>{{doc.user}}</span>
                                 <span class="small">{{doc.key}}</span>
                             </div>
                             <div ng-if="doc.type == 'link'">
-                                <a href="{{doc.val}}" target="_blank"><span class="h3"> {{doc.val}}</span> 
+                                <a href="{{doc.val}}" target="_blank"><span class="h4 cont"> {{doc.val}}</span> 
                                 <!--<img src="http://api.screenshotmachine.com/?key=f2f8b4&url={{doc.val}}">-->
                                 
                                 </a>
@@ -92,7 +94,9 @@
                                 <!--<a href="{{doc.val}}" target="_blank"><span class="h3"><img class="img img-thumbnail web-thumb" src="http://api.screenshotmachine.com/?key=f2f8b4&url={{doc.val}}"></span></a>-->
                                 <a href="{{doc.val}}" target="_blank"><span class="h3"><img class="img img-thumbnail web-thumb" src="https://cdn.pixabay.com/photo/2018/03/13/02/43/eye-3221498_640.jpg"></span></a>
 
-                                <br> <span class="small">{{doc.time | date:"dd/MM/yyyy 'at' h:mma"}}</span> by
+                                <br>
+                                <hr>
+                                <span class="small">{{doc.time | date:"dd/MM/yyyy 'at' h:mma"}}</span> by
                                 <span class="user small" msguser>{{doc.user}}</span>
                                 <span class="small">{{doc.key}}</span>
 
@@ -101,7 +105,7 @@
                         </div>
 
                         <div class="uploads">
-                            <div ng-repeat="item in uploads" class="upload-item">
+                            <div ng-repeat="item in uploads" class="upload-item post-card">
                                 <div class="upload-frame"></div>
                                 <div class="small"><a href="/uploads/{{item.upload}}">{{item.upload}}</a><span class="remove" ng-click="removeUpload(item.upload)">X</span> </div>
                                 <div ng-if="item.type == 'image'">
