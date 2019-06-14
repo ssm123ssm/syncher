@@ -45,7 +45,7 @@ app.use(bodyparser.urlencoded({
     extended: false
 }));
 app.use(cookieParser());
-//app.use(cors);
+app.use(cors());
 
 //capp.use(expressip().getIpInfoMiddleware);
 var dbFunctions = {
