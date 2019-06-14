@@ -45,8 +45,9 @@ app.use(bodyparser.urlencoded({
     extended: false
 }));
 app.use(cookieParser());
-app.use(cors);
-//app.use(expressip().getIpInfoMiddleware);
+//app.use(cors);
+
+//capp.use(expressip().getIpInfoMiddleware);
 var dbFunctions = {
     connect: function (collection, cb) {
         mongo.connect(dbURL, function (err, db) {
