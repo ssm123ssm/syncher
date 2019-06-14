@@ -1,8 +1,7 @@
-#!/usr/bin/env node
-
 var express = require('express');
 var port = 80;
 var bodyparser = require('body-parser');
+var cors = require('cors');
 var app = express();
 var dbURL = 'mongodb://localhost:27017/db';
 const mongo = require('mongodb').MongoClient;
@@ -45,7 +44,8 @@ var hash2;
 app.use(bodyparser.urlencoded({
     extended: false
 }));
-app.use(cookieParser())
+app.use(cookieParser());
+app.use(cors);
 //app.use(expressip().getIpInfoMiddleware);
 var dbFunctions = {
     connect: function (collection, cb) {
