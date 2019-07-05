@@ -1,10 +1,17 @@
 var firstRun = true;
 $(function () {
 
+    var scope = angular.element($("#ngapp")).scope();
+    var urlnow = window.location.href;
+    if (urlnow.includes('key=')) {
+        var key = urlnow.split('key=')[1];
+        $("#pvtKey").val(key);
+        $('#setKey').click();
+    }
     $(".remove").click(function (e) {
         e.preventDefault();
     });
-    var scope = angular.element($("#ngapp")).scope();
+
     $('#pushData').keypress(function (event) {
         if (event.keyCode == 13) {
             $('#sendMsg').click();
@@ -15,6 +22,7 @@ $(function () {
     });
     $('#pvtKey').keypress(function (event) {
         if (event.keyCode == 13) {
+
 
             $('#setKey').click();
         }
@@ -75,10 +83,6 @@ $(function () {
         $("#pushData").focus();
     });
 });
-
-
-
-
 var app = angular.module('myApp', []);
 app.directive("msguser", function () {
     return {
@@ -365,12 +369,6 @@ app.controller('ctrl', function ($scope) {
     }
 });
 
-
-/*
- * Demo of https://github.com/isuttell/sine-waves
- */
-
-
 function genWaves(speed) {
     var waves = new SineWaves({
         el: document.getElementById('waves'),
@@ -430,7 +428,6 @@ function genWaves(speed) {
     });
     return waves;
 }
-
 var wave = genWaves(4);
 
 function processDocs(docs) {
