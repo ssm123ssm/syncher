@@ -182,7 +182,7 @@ function filterByKey(key, arr) {
 console.log(filterByKey('', ch));*/
 
 function watchUploads(callback) {
-    fs.readdir('./uploads', function (err, items) {
+    fs.readdir('./public/uploads', function (err, items) {
         if (!err) {
             callback(items);
         }
@@ -190,7 +190,7 @@ function watchUploads(callback) {
 }
 
 function removeUpload(item, callback) {
-    fs.unlink(`./uploads/${item}`, function (err) {
+    fs.unlink(`./public/uploads/${item}`, function (err) {
         if (err) {
             console.log(err);
         } else {
