@@ -216,7 +216,7 @@ function handleQr(key, items) {
         console.log('No QR found. Creating...');
         qrcode.toFile(__dirname + `/public/uploads/syncherQr.key_${key}.png`, `http://35.200.245.209?key=${key}`, {
             color: {
-                dark: '#00F', // Blue dots
+                dark: '#425f61', // Blue dots
                 light: '#0000' // Transparent background
             }
         }, function (err) {
