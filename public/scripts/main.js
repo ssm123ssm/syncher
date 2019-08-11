@@ -141,7 +141,11 @@ app.controller('ctrl', function ($scope) {
         // debugger;
         firstRun = true;
         synch.clearTimeouts();
+        var oldKey = $scope.key;
         $scope.key = $("#pvtKey").val();
+        if (oldKey != $scope.key) {
+            $('.qr').fadeIn(400);
+        }
         Cookies.set('key', $scope.key);
         if ($("#pvtKey").val() == null || $("#pvtKey").val() == '') {
             $scope.mode = 'public';
