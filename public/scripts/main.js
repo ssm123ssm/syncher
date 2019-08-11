@@ -1,4 +1,5 @@
 var firstRun = true;
+
 $(function () {
 
     var scope = angular.element($("#ngapp")).scope();
@@ -32,6 +33,15 @@ $(function () {
 
     });
 
+    $(".qr").click(function () {
+
+        $(".qr").fadeOut(400);
+    });
+
+    $('.qr-btn').click(function () {
+        //debugger;
+        $(".qr").fadeIn(400);
+    });
     $("#user").click(function (ev) {
         var el = $("#user");
         this.contentEditable = true;
@@ -128,6 +138,7 @@ app.controller('ctrl', function ($scope) {
         $("#imagePreviewFrame").css("display", "none");
     }
     $scope.pvt = function () {
+        // debugger;
         firstRun = true;
         synch.clearTimeouts();
         $scope.key = $("#pvtKey").val();
@@ -141,6 +152,7 @@ app.controller('ctrl', function ($scope) {
             $scope.key_visible = true;
         }
 
+        console.log($scope);
         $scope.getData();
         //going public feed. handle page reload
         //$scope.getDocs();
@@ -312,6 +324,7 @@ app.controller('ctrl', function ($scope) {
             }
         });
     }
+
     $scope.getUploads = function () {
         $.ajax({
             method: 'GET',
@@ -349,6 +362,7 @@ app.controller('ctrl', function ($scope) {
         });
     }
     $scope.getData = function () {
+        $scope.host = window.location.origin + '?key=' + $scope.key;
         $scope.getDocs();
         $scope.getUploads();
     }
@@ -367,6 +381,9 @@ app.controller('ctrl', function ($scope) {
         Cookies.set('user', 'anonymous');
         Cookies.set('user_id', uniq.plain(18));
     }
+
+    $('.qr').fadeIn(400);
+
 });
 
 function genWaves(speed) {
@@ -443,6 +460,7 @@ function processDocs(docs) {
 
 function processUploads(items) {
     //console.log(items);
+    var scope = angular.element($("#ngapp")).scope();
     var out = [];
     items.forEach(function (item) {
         var obj = {
@@ -454,6 +472,13 @@ function processUploads(items) {
                 obj.type = 'image';
             }
         }
+        if (item.includes('syncherQr.key_')) {
+            obj.type = 'qr';
+            scope.qrLink = `/uploads/${item}`;
+            scope.$apply();
+            //$('.qr').fadeIn(400);
+        }
+
         out.push(obj);
     });
     return out;

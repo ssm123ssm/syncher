@@ -15,6 +15,36 @@ body {
     color: white;
 }
 
+.qr {
+    text-align: center;
+    display: none;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    padding: 0;
+    margin: 0;
+    background-color: #000000b0;
+}
+
+.qr-title {
+    position: absolute;
+    top: 50%;
+    width: 500px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 95vw;
+}
+
+.center-abs {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 .remove {
     cursor: pointer;
     position: relative;
@@ -120,3 +150,11 @@ a:hover {
     overflow: auto;
     display: block;
 }
+
+div {}
+
+.qr-head {
+    margin: 20px;
+}
+
+a {}

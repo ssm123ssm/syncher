@@ -16,7 +16,16 @@
     <div class="m-3 display-4 text-center title">syncher</div>
     <canvas id="waves"></canvas>
 
+
     <div ng-app="myApp" ng-controller="ctrl" ng-init="getData()" ng-cloak id="ngapp">
+
+        <div class="qr">
+            <div class="qr-title">
+                <div class="qr-head">Visit <a href='{{host}}'>{{host}}</a> or scan the QR code to share this feed</div>
+                <img class="img img-thumbnail " src="{{qrLink}}">
+            </div>
+
+        </div>
 
         <div class="indicator" ng-class="indicator"></div>
         <div class="create-btn btn-synch m-auto" id="createBtn">create</div>
@@ -24,6 +33,7 @@
         <div class="mode">{{mode}} mode</div>
         <div>posting as <span class="user" id="user">{{user}}</span> </div>
         <div ng-if="key_visible">key:{{key}}</div>
+        <div class="qr-btn">Share feed</div>
 
         <div class="full-width-container">
             <div class="card-synch" id="createPost">
@@ -86,9 +96,9 @@
                                 <span class="small">{{doc.key}}</span>
                             </div>
                             <div ng-if="doc.type == 'link'">
-                                <a href="{{doc.val}}" target="_blank"><span class="h4"> {{doc.val}}</span> 
-                                <!--<img src="http://api.screenshotmachine.com/?key=f2f8b4&url={{doc.val}}">-->
-                                
+                                <a href="{{doc.val}}" target="_blank"><span class="h4"> {{doc.val}}</span>
+                                    <!--<img src="http://api.screenshotmachine.com/?key=f2f8b4&url={{doc.val}}">-->
+
                                 </a>
                                 <span class="remove" ng-click="remove(doc._id)">X</span>
                                 <!--<a href="{{doc.val}}" target="_blank"><span class="h3"><img class="img img-thumbnail web-thumb" src="http://api.screenshotmachine.com/?key=f2f8b4&url={{doc.val}}"></span></a>-->
@@ -104,22 +114,22 @@
 
                         </div>
 
+
                         <div class="uploads">
-                            <div ng-repeat="item in uploads" class="upload-item post-card">
-                                <div class="upload-frame"></div>
+                            <div ng-repeat="item in uploads" class="upload-item post-card" ng-if="item.type != 'qr'">
+                                <div class=" upload-frame"></div>
                                 <div class="small"><a href="/uploads/{{item.upload}}">{{item.upload}}</a><span class="remove" ng-click="removeUpload(item.upload)">X</span> </div>
                                 <div ng-if="item.type == 'image'">
                                     <img class="img img-thumbnail feed-upload" src="/uploads/{{item.upload}}">
                                 </div>
-
                             </div>
                         </div>
 
                         <div class="input-group">
                             <input type="text" class="form-control" placeholder="Enter key... Leave blank for public feed" id="pvtKey">
                             <span class="input-group-btn">
-                    <button  class="btn btn-default" type="button" id="setKey" ng-click="pvt()">set</button>
-                </span>
+                                <button class="btn btn-default" type="button" id="setKey" ng-click="pvt()">set</button>
+                            </span>
                         </div>
                     </div>
                 </div>
