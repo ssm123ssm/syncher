@@ -12,6 +12,7 @@ var fs = require('fs');
 var syncher = require('./packages/syncher');
 var multer = require('multer');
 const webpush = require('web-push');
+var qrcode = require('qrcode');
 webpush.setVapidDetails(
     'mailto:example@yourdomain.org',
     'BOwgl5YKUWtkZ34IkuZQzP7-R-Gj03xHez498heSUY17vg48-jgOk7Ux_KdgCG8lQdDXBkEGkAFhkBYKQ_oLyGU',
@@ -202,9 +203,30 @@ function removeUpload(item, callback) {
 
 function getKeyByUserId(id, callback) {
     console.log('user id is %s', id);
-
 }
 
+function handleQr(key, items) {
+    var qrPresent = false;
+    items.forEach(function (i) {
+        if (i.includes('syncherQr.key_')) {
+            qrPresent = true;
+        }
+    });
+    if (!qrPresent) {
+        console.log('No QR found. Creating...');
+        qrcode.toFile(__dirname + `/public/uploads/syncherQr.key_${key}.png`, `http://35.200.245.209?key=${key}`, {
+            color: {
+                dark: '#00F', // Blue dots
+                light: '#0000' // Transparent background
+            }
+        }, function (err) {
+            if (err) throw err
+            console.log('done')
+        })
+    } else {
+        console.log('QR already there');
+    }
+}
 
 app.get('/checkuploads', function (req, res) {
     if (req.query.key == undefined) {
@@ -212,8 +234,11 @@ app.get('/checkuploads', function (req, res) {
     }
     //console.log(req.query.key);
     watchUploads(function (items) {
+        // QR code finder
+        var items = filterByKey(req.query.key, items);
+        handleQr(req.query.key, items);
         res.jsonp({
-            items: filterByKey(req.query.key, items)
+            items: items
         });
     });
 
@@ -228,7 +253,7 @@ app.get('/testMongo', function (req, res) {
     }
     dbFunctions.search("key_", key, function (ress) {
         //console.log(`getting docs for key: ${key}`);
-        //console.log(ress);
+        // console.log(ress);
         res.send(ress);
     });
 });
