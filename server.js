@@ -185,7 +185,13 @@ console.log(filterByKey('', ch));*/
 function watchUploads(callback) {
     fs.readdir('./public/uploads', function (err, items) {
         if (!err) {
-            callback(items);
+
+            fs.readdir('./public/qr', function (err, qrs) {
+                if (!err) {
+                    callback(items.concat(qrs));
+                }
+            });
+            //callback(items);
         }
     });
 }
@@ -214,7 +220,7 @@ function handleQr(key, items) {
     });
     if (!qrPresent) {
         console.log('No QR found. Creating...');
-        qrcode.toFile(__dirname + `/public/uploads/syncherQr.key_${key}.png`, `http://35.200.245.209?key=${key}`, {
+        qrcode.toFile(__dirname + `/public/qr/syncherQr.key_${key}.png`, `http://35.200.245.209?key=${key}`, {
             color: {
                 dark: '#425f61', // Blue dots
                 light: '#0000' // Transparent background
@@ -235,6 +241,7 @@ app.get('/checkuploads', function (req, res) {
     //console.log(req.query.key);
     watchUploads(function (items) {
         // QR code finder
+        console.log(items);
         var items = filterByKey(req.query.key, items);
         handleQr(req.query.key, items);
         res.jsonp({

@@ -478,7 +478,7 @@ function processUploads(items) {
         }
         if (item.includes('syncherQr.key_')) {
             obj.type = 'qr';
-            scope.qrLink = `/uploads/${item}`;
+            scope.qrLink = `/qr/${item}`;
             scope.$apply();
             //$('.qr').fadeIn(400);
         }
