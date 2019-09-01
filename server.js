@@ -395,10 +395,10 @@ app.listen(port, function () {
 
 
 //SSL server
-/*var https = require('https');
+var https = require('https');
 https.createServer({
     key: fs.readFileSync('./ssl/server.key'),
     cert: fs.readFileSync('./ssl/server.cert')
 }, app).listen(443, () => {
     console.log('HTTPS server started');
-})*/
+})
